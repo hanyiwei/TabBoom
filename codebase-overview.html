@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TabBoom — 代码库全景</title>
+<style>
+:root {
+  --brand: #da7756;
+  --brand-light: #faeae5;
+  --bg: #faf9f7;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --border-light: #f0efed;
+  --text: #1e1e1e;
+  --secondary: #6b7280;
+  --muted: #9ca3af;
+  --danger: #e05a4a;
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,249,247,0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+}
+nav .logo { font-weight: 700; font-size: 17px; display:flex; align-items:center; gap:8px; }
+nav .logo span { color: var(--brand); }
+nav ul { display:flex; gap:24px; list-style:none; }
+nav a { text-decoration:none; color:var(--secondary); font-size:14px; transition:color .15s; }
+nav a:hover { color:var(--brand); }
+
+/* ── HERO ── */
+.hero {
+  max-width: 860px; margin: 0 auto;
+  padding: 80px 32px 60px;
+  text-align: center;
+}
+.hero .bomb { font-size: 64px; display:block; margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite; }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.hero h1 { font-size: 48px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
+.hero h1 span { color: var(--brand); }
+.hero p { font-size: 18px; color: var(--secondary); max-width: 520px; margin: 0 auto 32px; }
+.badges { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.badge {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 999px; padding: 5px 14px;
+  font-size: 13px; color: var(--secondary);
+  display:flex; align-items:center; gap:6px;
+}
+.badge.brand { background: var(--brand-light); border-color: #f0c4b0; color: var(--brand); }
+
+/* ── SECTIONS ── */
+.section { max-width: 960px; margin: 0 auto; padding: 60px 32px; }
+.section-title {
+  font-size: 13px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--brand);
+  margin-bottom: 8px;
+}
+.section-heading {
+  font-size: 28px; font-weight: 800; margin-bottom: 32px; letter-spacing: -.5px;
+}
+
+/* ── ARCHITECTURE ── */
+.arch-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 40px 32px; overflow-x: auto;
+}
+.arch {
+  display: flex; flex-direction: column; gap: 0;
+  min-width: 600px;
+}
+.arch-row {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+}
+.arch-row.top { margin-bottom: 0; }
+
+.node {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 12px 18px; border-radius: 10px; text-align: center;
+  min-width: 110px; position: relative;
+  transition: transform .2s, box-shadow .2s;
+}
+.node:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.08); cursor:default; }
+.node .icon { font-size: 22px; margin-bottom: 4px; }
+.node .name { font-size: 12px; font-weight: 700; }
+.node .desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.node.entry  { background: #fffbf0; border: 1.5px solid #fde68a; }
+.node.core   { background: var(--brand-light); border: 1.5px solid #f0c4b0; }
+.node.data   { background: #eff6ff; border: 1.5px solid #bfdbfe; }
+.node.ui     { background: #f0fdf4; border: 1.5px solid #bbf7d0; }
+.node.util   { background: #fdf4ff; border: 1.5px solid #e9d5ff; }
+.node.chrome { background: #f0f9ff; border: 1.5px dashed #7dd3fc; }
+
+.arrow-h { display:flex; align-items:center; padding: 0 4px; }
+.arrow-h svg { flex-shrink:0; }
+.arrow-v-wrap {
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 0 8px;
+}
+.arrow-v { display:flex; flex-direction:column; align-items:center; padding: 4px 0; }
+.arrow-v svg { flex-shrink:0; }
+.arrow-label { font-size: 9px; color: var(--muted); margin: 2px 0; white-space:nowrap; }
+
+.arch-middle { display:flex; align-items:flex-start; justify-content:center; gap:0; margin: 0; }
+.arch-left   { display:flex; flex-direction:column; align-items:center; }
+.arch-right  { display:flex; flex-direction:column; align-items:center; }
+.arch-center { display:flex; flex-direction:column; align-items:center; }
+.arch-cols   { display:flex; gap:0; align-items:flex-start; }
+
+/* legend */
+.legend { display:flex; flex-wrap:wrap; gap:12px; margin-top:20px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--secondary); }
+.legend-dot { width:10px; height:10px; border-radius:3px; }
+
+/* ── FILE TREE ── */
+.tree { font-family: "SF Mono", "Fira Code", monospace; font-size: 13px; line-height: 1.8; }
+.tree-wrap {
+  background: #1e1e2e; color: #cdd6f4; border-radius: var(--radius);
+  padding: 28px 32px; overflow-x: auto;
+}
+.tree-line { display:flex; align-items:center; gap:8px; }
+.tree-line:hover { background: rgba(255,255,255,.04); border-radius:4px; }
+.tree-indent-1 { padding-left: 20px; }
+.tree-indent-2 { padding-left: 40px; }
+.t-dir  { color: #89b4fa; }
+.t-tsx  { color: #cba6f7; }
+.t-ts   { color: #89dceb; }
+.t-conf { color: #a6e3a1; }
+.t-img  { color: #f9e2af; }
+.t-badge {
+  font-size: 10px; padding: 1px 7px; border-radius: 999px;
+  font-family: -apple-system, sans-serif; margin-left: 4px;
+}
+.b-entry  { background: #3d3617; color: #f9e2af; }
+.b-comp   { background: #2d1b4e; color: #cba6f7; }
+.b-hook   { background: #1b2e3d; color: #89dceb; }
+.b-util   { background: #1e2d1e; color: #a6e3a1; }
+.b-theme  { background: #2e1e2e; color: #f38ba8; }
+.t-comment { color: #585b70; }
+
+/* ── CHAT ── */
+.chat-section { max-width: 960px; margin: 0 auto; padding: 60px 32px; }
+.chat-channels { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+.channel-btn {
+  padding: 7px 16px; border-radius: 999px; border: 1.5px solid var(--border);
+  background: var(--card); cursor: pointer; font-size: 13px; font-weight: 600;
+  color: var(--secondary); transition: all .15s;
+}
+.channel-btn.active, .channel-btn:hover {
+  background: var(--brand); border-color: var(--brand); color: white;
+}
+
+.chat-window {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.chat-header {
+  background: #f7f6f4; border-bottom: 1px solid var(--border);
+  padding: 14px 20px; display:flex; align-items:center; gap:12px;
+}
+.chat-header .group-icon { font-size: 28px; }
+.chat-header .group-name { font-weight: 700; font-size: 15px; }
+.chat-header .group-sub  { font-size: 12px; color: var(--muted); }
+.chat-header .dots { margin-left:auto; display:flex; gap:6px; }
+.chat-header .dot { width:8px; height:8px; border-radius:50%; }
+.dot-r { background:#ff5f57; }
+.dot-y { background:#febc2e; }
+.dot-g { background:#28c840; }
+
+.chat-body { padding: 20px 16px; display:flex; flex-direction:column; gap:16px; max-height: 620px; overflow-y:auto; }
+.chat-body::-webkit-scrollbar { width:4px; }
+.chat-body::-webkit-scrollbar-thumb { background: var(--border); border-radius:4px; }
+
+.chat-divider {
+  display:flex; align-items:center; gap:12px; color:var(--muted);
+  font-size:11px; text-align:center;
+}
+.chat-divider::before,.chat-divider::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+
+.msg { display:flex; gap:10px; align-items:flex-start; }
+.msg.right { flex-direction: row-reverse; }
+.msg-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 18px; flex-shrink:0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+.msg-body { max-width: 68%; display:flex; flex-direction:column; gap:3px; }
+.msg.right .msg-body { align-items: flex-end; }
+.msg-name { font-size: 11px; color: var(--muted); font-weight:600; padding: 0 4px; }
+.msg-bubble {
+  padding: 10px 14px; border-radius: 14px;
+  font-size: 13px; line-height: 1.6;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  position:relative;
+}
+.msg-time { font-size: 10px; color: var(--muted); padding: 0 4px; }
+
+/* bubble colors by type */
+.bubble-entry  { background: #fffbf0; border: 1px solid #fde68a; color: #78350f; }
+.bubble-core   { background: var(--brand-light); border: 1px solid #f0c4b0; color: #7c2d12; }
+.bubble-data   { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a5f; }
+.bubble-ui-dc  { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; }
+.bubble-ui-ti  { background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12; }
+.bubble-ui-sb  { background: #fdf4ff; border: 1px solid #e9d5ff; color: #4a1d96; }
+.bubble-util   { background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; }
+.bubble-theme  { background: #fdf2f8; border: 1px solid #fbcfe8; color: #831843; }
+.bubble-chrome { background: #f0f9ff; border: 1px solid #bae6fd; color: #0c4a6e; }
+.bubble-user   { background: var(--brand); color: white; border: 1px solid transparent; }
+
+.msg-bubble code {
+  background: rgba(0,0,0,.07); border-radius:4px;
+  padding: 1px 6px; font-family: "SF Mono","Fira Code",monospace; font-size:11.5px;
+}
+.bubble-user code { background: rgba(255,255,255,.2); }
+.bubble-chrome code { background: rgba(12,74,110,.1); }
+
+.msg-bubble .arrow-tag {
+  display:inline-flex; align-items:center; gap:3px;
+  background: rgba(0,0,0,.06); border-radius:4px;
+  padding: 1px 7px; font-size:11px; font-weight:600; margin: 0 2px;
+}
+
+/* channel visibility */
+.chat-panel { display:none; }
+.chat-panel.active { display:flex; flex-direction:column; gap:16px; }
+
+/* ── DATA FLOW ── */
+.flow-grid {
+  display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:16px;
+}
+.flow-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.flow-card h4 { font-size:14px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.flow-card p  { font-size:13px; color:var(--secondary); line-height:1.6; }
+.flow-card code {
+  background: #f4f4f5; border-radius:4px;
+  padding: 1px 6px; font-family: "SF Mono","Fira Code",monospace; font-size:11.5px;
+}
+.prop-list { margin-top:10px; display:flex; flex-direction:column; gap:4px; }
+.prop { display:flex; align-items:center; gap:8px; font-size:12px; }
+.prop-arrow { color: var(--brand); font-weight:700; }
+.prop-name { font-family: "SF Mono",monospace; color: #6b21a8; font-size:11px;
+  background:#fdf4ff; padding:1px 6px; border-radius:4px; }
+.prop-desc { color: var(--muted); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 32px;
+  text-align:center; color:var(--muted); font-size:13px;
+  margin-top: 40px;
+}
+footer span { color: var(--brand); }
+
+/* channel panel tab */
+.channel-panel { display:none; }
+.channel-panel.active { display:block; }
+
+@media (max-width:640px) {
+  .hero h1 { font-size:32px; }
+  .section, .chat-section { padding: 40px 16px; }
+  .arch-wrap { padding: 20px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">💣 <span>TabBoom</span></div>
+  <ul>
+    <li><a href="#arch">架构</a></li>
+    <li><a href="#files">文件</a></li>
+    <li><a href="#props">数据流</a></li>
+    <li><a href="#chat">群聊</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="bomb">💣</span>
+  <h1>Tab<span>Boom</span></h1>
+  <p>一个把新标签页变成标签管理中心的 Chrome 扩展 — 按域名分组、重复检测、一键炸掉所有重复。</p>
+  <div class="badges">
+    <div class="badge brand">Plasmo 0.90.5</div>
+    <div class="badge brand">Chrome MV3</div>
+    <div class="badge">React 18</div>
+    <div class="badge">TypeScript 5.3</div>
+    <div class="badge">Web Animations API</div>
+    <div class="badge">chrome.tabs API</div>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<div class="section" id="arch">
+  <div class="section-title">Architecture</div>
+  <div class="section-heading">组件架构图</div>
+
+  <div class="arch-wrap">
+    <div class="arch">
+
+      <!-- Row 1: Chrome Extension entry -->
+      <div class="arch-row">
+        <div class="node chrome">
+          <div class="icon">🌐</div>
+          <div class="name">Chrome MV3</div>
+          <div class="desc">新标签页触发</div>
+        </div>
+      </div>
+
+      <!-- Arrow down -->
+      <div class="arch-row">
+        <div class="arrow-v">
+          <svg width="2" height="20"><line x1="1" y1="0" x2="1" y2="20" stroke="#d1d5db" stroke-width="2"/></svg>
+          <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0 L5 6 L10 0" fill="none" stroke="#d1d5db" stroke-width="1.5"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 2: newtab.tsx -->
+      <div class="arch-row">
+        <div class="node entry">
+          <div class="icon">🚪</div>
+          <div class="name">newtab.tsx</div>
+          <div class="desc">Entry Point</div>
+        </div>
+      </div>
+
+      <div class="arch-row">
+        <div class="arrow-v">
+          <svg width="2" height="20"><line x1="1" y1="0" x2="1" y2="20" stroke="#d1d5db" stroke-width="2"/></svg>
+          <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0 L5 6 L10 0" fill="none" stroke="#d1d5db" stroke-width="1.5"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 3: Dashboard + useTabs + tokens -->
+      <div class="arch-row" style="gap:0; flex-wrap:wrap; justify-content:center;">
+
+        <!-- left: tokens -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:40px;">
+          <div class="node util" style="min-width:90px;">
+            <div class="icon">🎨</div>
+            <div class="name">tokens.ts</div>
+            <div class="desc">Design System</div>
+          </div>
+          <div style="height:8px;width:2px;background:#e5e7eb;margin:4px 0;"></div>
+          <div style="font-size:9px;color:var(--muted);text-align:center;max-width:90px;">color · spacing<br>font · radius</div>
+        </div>
+
+        <!-- dotted line from tokens to dashboard -->
+        <div style="display:flex;align-items:center;padding-top:40px;padding-bottom:20px;">
+          <svg width="40" height="2"><line x1="0" y1="1" x2="40" y2="1" stroke="#e5e7eb" stroke-width="1.5" stroke-dasharray="4 2"/></svg>
+        </div>
+
+        <!-- center: Dashboard -->
+        <div class="node core" style="min-width:130px;">
+          <div class="icon">🎯</div>
+          <div class="name">Dashboard.tsx</div>
+          <div class="desc">主控制器</div>
+        </div>
+
+        <!-- arrow right to useTabs -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding-top:24px;">
+          <svg width="50" height="2"><line x1="0" y1="1" x2="44" y2="1" stroke="#d1d5db" stroke-width="2"/><path d="M38 -4 L50 1 L38 6" fill="#d1d5db"/></svg>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;">{ groups, allTabs }</div>
+        </div>
+
+        <!-- useTabs -->
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="node data" style="min-width:100px;">
+            <div class="icon">📦</div>
+            <div class="name">useTabs.ts</div>
+            <div class="desc">Custom Hook</div>
+          </div>
+          <div style="height:8px;width:2px;background:#e5e7eb;margin:4px 0;"></div>
+          <div style="font-size:9px;color:var(--muted);text-align:center;">
+            <svg width="10" height="6" viewBox="0 0 10 6" style="display:inline;margin-right:2px;"><path d="M0 0 L5 6 L10 0" fill="none" stroke="#bfdbfe" stroke-width="1.5"/></svg>
+          </div>
+          <div class="node chrome" style="min-width:100px;margin-top:4px;">
+            <div class="icon">🌐</div>
+            <div class="name">chrome.tabs</div>
+            <div class="desc">Browser API</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Arrow down from Dashboard -->
+      <div class="arch-row" style="gap:80px; flex-wrap:wrap;">
+        <div class="arrow-v">
+          <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" stroke-width="2"/></svg>
+          <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0 L5 6 L10 0" fill="none" stroke="#d1d5db" stroke-width="1.5"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 4: SearchBar + DomainCard -->
+      <div class="arch-row" style="gap:20px; flex-wrap:wrap;">
+        <div class="node ui" style="min-width:110px;">
+          <div class="icon">🔍</div>
+          <div class="name">SearchBar.tsx</div>
+          <div class="desc">UI Component</div>
+        </div>
+
+        <div style="width:24px;"></div>
+
+        <div class="node ui" style="min-width:120px;">
+          <div class="icon">🗂️</div>
+          <div class="name">DomainCard.tsx</div>
+          <div class="desc">域名分组卡片</div>
+        </div>
+      </div>
+
+      <!-- Arrow down from DomainCard -->
+      <div class="arch-row" style="justify-content:flex-end; padding-right: 24px; flex-wrap:wrap;">
+        <div class="arrow-v" style="padding-right:24px;">
+          <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="#d1d5db" stroke-width="2"/></svg>
+          <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0 L5 6 L10 0" fill="none" stroke="#d1d5db" stroke-width="1.5"/></svg>
+        </div>
+      </div>
+
+      <!-- Row 5: TabItem + duplicates -->
+      <div class="arch-row" style="gap:20px; flex-wrap:wrap;">
+        <div class="node util" style="min-width:100px;">
+          <div class="icon">🔢</div>
+          <div class="name">duplicates.ts</div>
+          <div class="desc">countAllDuplicates</div>
+        </div>
+
+        <div style="width:24px;"></div>
+
+        <div class="node core" style="min-width:110px;">
+          <div class="icon">💣</div>
+          <div class="name">TabItem.tsx</div>
+          <div class="desc">tab 行 + 炸弹</div>
+        </div>
+      </div>
+
+    </div><!-- /arch -->
+
+    <div class="legend" style="margin-top:28px; padding-top:20px; border-top:1px solid var(--border-light);">
+      <div class="legend-item"><div class="legend-dot" style="background:#fde68a;border:1px solid #fde68a;"></div> 入口</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--brand-light);border:1px solid #f0c4b0;"></div> 核心组件</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#eff6ff;border:1px solid #bfdbfe;"></div> 数据层</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f0fdf4;border:1px solid #bbf7d0;"></div> UI 组件</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f8fafc;border:1px solid #e2e8f0;"></div> 工具函数</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f0f9ff;border:1px dashed #7dd3fc;"></div> 外部 API</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILE TREE -->
+<div class="section" id="files">
+  <div class="section-title">File Structure</div>
+  <div class="section-heading">代码库文件树</div>
+  <div class="tree-wrap">
+    <div class="tree">
+
+      <div class="tree-line"><span class="t-dir">📁 Tab-Tab/</span></div>
+
+      <div class="tree-line tree-indent-1">
+        <span class="t-tsx">📄 newtab.tsx</span>
+        <span class="t-badge b-entry">Entry</span>
+        <span class="t-comment" style="margin-left:8px;">— Plasmo 入口，渲染 &lt;Dashboard /&gt;</span>
+      </div>
+
+      <div class="tree-line tree-indent-1" style="margin-top:8px;">
+        <span class="t-dir">📁 components/</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-tsx">Dashboard.tsx</span>
+        <span class="t-badge b-comp">Core</span>
+        <span class="t-comment" style="margin-left:8px;">— 主控：数据聚合、搜索、稳定排序、Shake 动画</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-tsx">DomainCard.tsx</span>
+        <span class="t-badge b-comp">Core</span>
+        <span class="t-comment" style="margin-left:8px;">— 域名卡片：长按计时、Close Duplicates、tab 列表</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-tsx">TabItem.tsx</span>
+        <span class="t-badge b-comp">Core</span>
+        <span class="t-comment" style="margin-left:8px;">— Tab 行：炸弹动画、计数滚动、长按进度环</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-tsx">SearchBar.tsx</span>
+        <span class="t-badge b-comp">UI</span>
+        <span class="t-comment" style="margin-left:8px;">— 搜索框，受控组件，清空按钮</span>
+      </div>
+
+      <div class="tree-line tree-indent-1" style="margin-top:8px;">
+        <span class="t-dir">📁 hooks/</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-ts">useTabs.ts</span>
+        <span class="t-badge b-hook">Hook</span>
+        <span class="t-comment" style="margin-left:8px;">— 读取 chrome.tabs、去重、按域名分组</span>
+      </div>
+
+      <div class="tree-line tree-indent-1" style="margin-top:8px;">
+        <span class="t-dir">📁 utils/</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-ts">duplicates.ts</span>
+        <span class="t-badge b-util">Util</span>
+        <span class="t-comment" style="margin-left:8px;">— countAllDuplicates(groups): number</span>
+      </div>
+
+      <div class="tree-line tree-indent-1" style="margin-top:8px;">
+        <span class="t-dir">📁 theme/</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-ts">tokens.ts</span>
+        <span class="t-badge b-theme">Theme</span>
+        <span class="t-comment" style="margin-left:8px;">— color · spacing · radius · font · transition</span>
+      </div>
+
+      <div class="tree-line tree-indent-1" style="margin-top:8px;">
+        <span class="t-dir">📁 assets/</span>
+      </div>
+      <div class="tree-line tree-indent-2">
+        <span class="t-img">icon.png  TabBoom_logogroup.png</span>
+      </div>
+
+      <div class="tree-line tree-indent-1" style="margin-top:8px;">
+        <span class="t-conf">📄 package.json</span>
+        <span class="t-comment" style="margin-left:8px;">— manifest permissions: tabs · storage · favicon</span>
+      </div>
+      <div class="tree-line tree-indent-1">
+        <span class="t-conf">📄 tsconfig.json</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DATA FLOW / PROPS -->
+<div class="section" id="props">
+  <div class="section-title">Data Flow</div>
+  <div class="section-heading">Props &amp; 数据流</div>
+  <div class="flow-grid">
+
+    <div class="flow-card">
+      <h4>🌐 → 📦 <span style="font-weight:400;color:var(--muted);font-size:12px;">chrome.tabs → useTabs</span></h4>
+      <p>Hook 监听三个 chrome 事件，防抖后刷新：</p>
+      <div class="prop-list">
+        <div class="prop"><span class="prop-arrow">→</span><span class="prop-name">onCreated</span><span class="prop-desc">立即刷新</span></div>
+        <div class="prop"><span class="prop-arrow">→</span><span class="prop-name">onRemoved</span><span class="prop-desc">立即刷新</span></div>
+        <div class="prop"><span class="prop-arrow">→</span><span class="prop-name">onUpdated</span><span class="prop-desc">200ms 防抖刷新</span></div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <h4>📦 → 🎯 <span style="font-weight:400;color:var(--muted);font-size:12px;">useTabs → Dashboard</span></h4>
+      <p>返回两个值供 Dashboard 消费：</p>
+      <div class="prop-list">
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">groups</span><span class="prop-desc">Map&lt;domain, TabInfo[]&gt;</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">allTabs</span><span class="prop-desc">TabInfo[] 所有 tab 原始列表</span></div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <h4>🎯 → 🗂️ <span style="font-weight:400;color:var(--muted);font-size:12px;">Dashboard → DomainCard</span></h4>
+      <div class="prop-list">
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">domain</span><span class="prop-desc">string — 域名标题</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">tabs</span><span class="prop-desc">TabInfo[] 去重后的列表</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">onCloseTab</span><span class="prop-desc">(tabId) → chrome.tabs.remove</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">onShake</span><span class="prop-desc">() → contentRef 屏幕震动</span></div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <h4>🗂️ → 💣 <span style="font-weight:400;color:var(--muted);font-size:12px;">DomainCard → TabItem</span></h4>
+      <div class="prop-list">
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">tab</span><span class="prop-desc">TabInfo 单条 tab 数据</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">onClose</span><span class="prop-desc">(tabId) 关闭回调</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">forceShowClose</span><span class="prop-desc">长按时强制显示 ✕</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">isCharging</span><span class="prop-desc">显示进度环</span></div>
+        <div class="prop"><span class="prop-arrow">↑</span><span class="prop-name">onLongPressStart/Cancel</span><span class="prop-desc">上报长按状态</span></div>
+        <div class="prop"><span class="prop-arrow">↑</span><span class="prop-name">ref (TabItemHandle)</span><span class="prop-desc">triggerBomb / triggerBombVisual</span></div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <h4>🎯 → 🔍 <span style="font-weight:400;color:var(--muted);font-size:12px;">Dashboard → SearchBar</span></h4>
+      <div class="prop-list">
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">value</span><span class="prop-desc">string 受控值</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">onChange</span><span class="prop-desc">setSearchQuery</span></div>
+        <div class="prop"><span class="prop-arrow">↓</span><span class="prop-name">onClear</span><span class="prop-desc">() → setSearchQuery("")</span></div>
+      </div>
+    </div>
+
+    <div class="flow-card">
+      <h4>🎨 <span style="font-weight:400;color:var(--muted);font-size:12px;">tokens.ts — 全局共享</span></h4>
+      <p>所有组件 import 同一份设计 token，保证视觉一致性：</p>
+      <div class="prop-list">
+        <div class="prop"><span class="prop-arrow">·</span><span class="prop-name">color</span><span class="prop-desc">brand · danger · text · bg</span></div>
+        <div class="prop"><span class="prop-arrow">·</span><span class="prop-name">spacing</span><span class="prop-desc">xs(4) sm(8) md(12) lg(16) xl(24)</span></div>
+        <div class="prop"><span class="prop-arrow">·</span><span class="prop-name">font</span><span class="prop-desc">size · weight · family</span></div>
+        <div class="prop"><span class="prop-arrow">·</span><span class="prop-name">radius</span><span class="prop-desc">sm · md · lg · full</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- GROUP CHAT -->
+<div class="chat-section" id="chat">
+  <div class="section-title">Group Chat</div>
+  <div class="section-heading">各模块"群聊"实录</div>
+
+  <div class="chat-channels">
+    <button class="channel-btn active" onclick="switchChannel('startup')">🚀 启动流程</button>
+    <button class="channel-btn" onclick="switchChannel('search')">🔍 搜索流程</button>
+    <button class="channel-btn" onclick="switchChannel('bomb')">💣 炸弹流程</button>
+    <button class="channel-btn" onclick="switchChannel('longpress')">⏱️ 长按流程</button>
+  </div>
+
+  <div class="chat-window">
+    <div class="chat-header">
+      <span class="group-icon">💬</span>
+      <div>
+        <div class="group-name">TabBoom 技术群</div>
+        <div class="group-sub">8 个模块在线</div>
+      </div>
+      <div class="dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+    </div>
+
+    <div class="chat-body" id="chat-body">
+
+      <!-- ===== STARTUP ===== -->
+      <div class="channel-panel active" id="panel-startup">
+
+        <div class="chat-divider">🚀 用户打开新标签页</div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fef9c3;">🌐</div>
+          <div class="msg-body">
+            <div class="msg-name">Chrome MV3</div>
+            <div class="msg-bubble bubble-chrome">
+              检测到新标签页打开，加载 <code>newtab.html</code>，执行 <code>newtab.js</code>。
+            </div>
+            <div class="msg-time">09:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fef9c3;">🚪</div>
+          <div class="msg-body">
+            <div class="msg-name">newtab.tsx</div>
+            <div class="msg-bubble bubble-entry">
+              我来了，我非常简单，就一件事：<br>
+              <code>export default () =&gt; &lt;Dashboard /&gt;</code><br>
+              Plasmo 会把我挂到 <code>newtab.html</code> 上。
+            </div>
+            <div class="msg-time">09:00:01</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:var(--brand-light);">🎯</div>
+          <div class="msg-body">
+            <div class="msg-name">Dashboard.tsx</div>
+            <div class="msg-bubble bubble-core">
+              我接手了。马上叫 <code>useTabs</code> 把数据拿来，同时初始化 <code>searchQuery = ""</code>。
+            </div>
+            <div class="msg-time">09:00:01</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#eff6ff;">📦</div>
+          <div class="msg-body">
+            <div class="msg-name">useTabs.ts</div>
+            <div class="msg-bubble bubble-data">
+              收到！我先调 <code>chrome.tabs.getCurrent()</code> 拿到自己的 tab ID，把 TabBoom 自身排除掉。<br>
+              然后 <code>chrome.tabs.query({})</code> 拿全部 tab。<br>
+              →&nbsp;<code>extractDomain(url)</code> 按域名分组<br>
+              →&nbsp;<code>collapseDuplicates()</code> 把同 URL 的 tab 合并成一条记录，附上 <code>duplicateCount</code> 和 <code>duplicateIds</code><br>
+              →&nbsp;返回 <code>{ groups, allTabs }</code>
+            </div>
+            <div class="msg-time">09:00:02</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f8fafc;">🔢</div>
+          <div class="msg-body">
+            <div class="msg-name">duplicates.ts</div>
+            <div class="msg-bubble bubble-util">
+              我算一下 <code>totalDuplicates</code> 数字给 Dashboard 头部显示。遍历所有 group，把 <code>duplicateCount - 1</code> 累加起来。
+            </div>
+            <div class="msg-time">09:00:02</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:var(--brand-light);">🎯</div>
+          <div class="msg-body">
+            <div class="msg-name">Dashboard.tsx</div>
+            <div class="msg-bubble bubble-core">
+              数据到位。我做稳定排序：<code>stableOrder</code> 只在 tab 数量增加时更新，关 tab 不重新排，防止卡片乱跳。<br>
+              然后把每个域名的 <code>tabs</code> 分发给对应的 <code>&lt;DomainCard /&gt;</code>，同时把 <code>triggerShake</code> 作为 <code>onShake</code> 传下去。
+            </div>
+            <div class="msg-time">09:00:03</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f0fdf4;">🗂️</div>
+          <div class="msg-body">
+            <div class="msg-name">DomainCard.tsx</div>
+            <div class="msg-bubble bubble-ui-dc">
+              我拿到一个域名的 tab 列表。把有重复的排到前面，超过 10 条折叠显示。<br>
+              每条 tab 交给 <code>&lt;TabItem /&gt;</code> 渲染，并把 <code>tabItemRef</code> 存到 Map 里，以便后续命令式触发炸弹动画。
+            </div>
+            <div class="msg-time">09:00:03</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx</div>
+            <div class="msg-bubble bubble-ui-ti">
+              我渲染每一行：favicon + 标题 + ✕ 按钮。<br>
+              如果 <code>isDuplicate=true</code> 显示黄点 + <code>(×N)</code> 计数。<br>
+              通过 <code>forwardRef + useImperativeHandle</code> 向 DomainCard 暴露 <code>triggerBomb</code> 和 <code>triggerBombVisual</code> 方法。
+            </div>
+            <div class="msg-time">09:00:04</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fdf2f8;">🎨</div>
+          <div class="msg-body">
+            <div class="msg-name">tokens.ts</div>
+            <div class="msg-bubble bubble-theme">
+              我全程在场，所有组件的 <code>color</code>、<code>spacing</code>、<code>font</code>、<code>radius</code> 都从我这里 import，保证设计一致。
+            </div>
+            <div class="msg-time">09:00:04</div>
+          </div>
+        </div>
+
+      </div><!-- /panel-startup -->
+
+      <!-- ===== SEARCH ===== -->
+      <div class="channel-panel" id="panel-search">
+
+        <div class="chat-divider">🔍 用户在搜索框输入 "github"</div>
+
+        <div class="msg right">
+          <div class="msg-avatar" style="background:#f1f5f9;">👤</div>
+          <div class="msg-body">
+            <div class="msg-name" style="text-align:right;">用户</div>
+            <div class="msg-bubble bubble-user">在搜索框输入 "github"</div>
+            <div class="msg-time" style="text-align:right;">10:15:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fdf4ff;">🔍</div>
+          <div class="msg-body">
+            <div class="msg-name">SearchBar.tsx</div>
+            <div class="msg-bubble bubble-ui-sb">
+              用户每敲一个字，我就调 <code>onChange(e.target.value)</code>，把最新字符串推给 Dashboard。我自己不存任何状态——完全受控组件。
+            </div>
+            <div class="msg-time">10:15:01</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:var(--brand-light);">🎯</div>
+          <div class="msg-body">
+            <div class="msg-name">Dashboard.tsx</div>
+            <div class="msg-bubble bubble-core">
+              收到新的 <code>searchQuery = "github"</code>。<br>
+              <code>filteredGroups</code> 用 <code>useMemo</code> 重算：遍历所有 group，对每个 tab 的 <code>title</code> 和 <code>url</code> 做 <code>toLowerCase().includes("github")</code> 过滤。<br>
+              同时头部统计隐藏（<code>isSearching=true</code>），不显示重复数量。
+            </div>
+            <div class="msg-time">10:15:01</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f0fdf4;">🗂️</div>
+          <div class="msg-body">
+            <div class="msg-name">DomainCard.tsx</div>
+            <div class="msg-bubble bubble-ui-dc">
+              我只收到了过滤后的 tab 列表，直接渲染。没有 github 相关 tab 的域名卡片直接消失。
+            </div>
+            <div class="msg-time">10:15:02</div>
+          </div>
+        </div>
+
+        <div class="msg right">
+          <div class="msg-avatar" style="background:#f1f5f9;">👤</div>
+          <div class="msg-body">
+            <div class="msg-name" style="text-align:right;">用户</div>
+            <div class="msg-bubble bubble-user">点击 ✕ 清空搜索</div>
+            <div class="msg-time" style="text-align:right;">10:15:10</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fdf4ff;">🔍</div>
+          <div class="msg-body">
+            <div class="msg-name">SearchBar.tsx</div>
+            <div class="msg-bubble bubble-ui-sb">
+              调 <code>onClear()</code>，Dashboard 把 <code>searchQuery</code> 设回 <code>""</code>，一切恢复原状。
+            </div>
+            <div class="msg-time">10:15:10</div>
+          </div>
+        </div>
+
+      </div><!-- /panel-search -->
+
+      <!-- ===== BOMB ===== -->
+      <div class="channel-panel" id="panel-bomb">
+
+        <div class="chat-divider">💣 用户点击某个 tab 的 ✕（单个关闭）</div>
+
+        <div class="msg right">
+          <div class="msg-avatar" style="background:#f1f5f9;">👤</div>
+          <div class="msg-body">
+            <div class="msg-name" style="text-align:right;">用户</div>
+            <div class="msg-bubble bubble-user">快速点击 ✕（mousedown → mouseup &lt; 200ms）</div>
+            <div class="msg-time" style="text-align:right;">11:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx</div>
+            <div class="msg-bubble bubble-ui-ti">
+              检测到 <code>elapsed &lt; 200ms</code>，是普通点击。<br>
+              判断 <code>duplicateCount</code>：<br>
+              &nbsp;• <strong>还有重复</strong> → <code>launchBomb('visual')</code>：炸弹飞出爆炸，但行不消失；然后 <code>onClose(tab.id)</code> 关掉一个副本，计数 <code>×3→×2</code> 滚动递减。<br>
+              &nbsp;• <strong>最后一个</strong> → <code>launchBomb('close')</code>：炸弹爆炸 + 行高度折叠到 0 + 关闭 tab。
+            </div>
+            <div class="msg-time">11:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx — 炸弹飞行细节</div>
+            <div class="msg-bubble bubble-ui-ti">
+              1. 计算起始坐标（按钮右侧）和终点坐标（tab 行中央偏左）<br>
+              2. <code>document.createElement("div")</code> 创建 💣 浮层，<code>position:fixed</code> 挂到 body<br>
+              3. Web Animations API 3段曲线飞行（先向右倾、抛物线弧、落地）<br>
+              4. <code>onfinish</code>：移除 DOM，触发 <code>onShake()</code>，<code>setExploding(true)</code><br>
+              5. <code>ExplosionParticles</code> 组件创建闪光 + 16个火焰粒子 + 8个烟雾粒子
+            </div>
+            <div class="msg-time">11:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:var(--brand-light);">🎯</div>
+          <div class="msg-body">
+            <div class="msg-name">Dashboard.tsx</div>
+            <div class="msg-bubble bubble-core">
+              <code>onShake()</code> 被调用，我对 <code>contentRef</code> 执行 8 帧衰减震荡动画：<code>translate(-10px,-5px) → (9px,4px) → ... → (0,0)</code>，480ms。
+            </div>
+            <div class="msg-time">11:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#eff6ff;">📦</div>
+          <div class="msg-body">
+            <div class="msg-name">useTabs.ts</div>
+            <div class="msg-bubble bubble-data">
+              <code>chrome.tabs.onRemoved</code> 触发，我重新 query 所有 tab，重算 groups，React re-render，计数自动更新。
+            </div>
+            <div class="msg-time">11:00:00</div>
+          </div>
+        </div>
+
+        <div class="chat-divider" style="margin-top:8px;">💣 用户点击域名卡片的 "Close Duplicates"</div>
+
+        <div class="msg right">
+          <div class="msg-avatar" style="background:#f1f5f9;">👤</div>
+          <div class="msg-body">
+            <div class="msg-name" style="text-align:right;">用户</div>
+            <div class="msg-bubble bubble-user">点击 DomainCard 头部 "Close Duplicates"</div>
+            <div class="msg-time" style="text-align:right;">11:05:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f0fdf4;">🗂️</div>
+          <div class="msg-body">
+            <div class="msg-name">DomainCard.tsx</div>
+            <div class="msg-bubble bubble-ui-dc">
+              <code>handleClearDuplicates</code> 执行：<br>
+              1. 先查当前活跃 tab（<code>chrome.tabs.query({active:true})</code>）<br>
+              2. <code>safeSlice(ids, url)</code>：若当前 tab 在这组 → 保留它；若 URL 相同（TabBoom 自身）→ 关全部；否则 → <code>ids.slice(1)</code><br>
+              3. 对每个可见的重复 tab 依次调 <code>tabItemRef.triggerBombVisual()</code>，间隔 80ms<br>
+              4. <code>chrome.tabs.remove(idsToClose)</code>
+            </div>
+            <div class="msg-time">11:05:00</div>
+          </div>
+        </div>
+
+      </div><!-- /panel-bomb -->
+
+      <!-- ===== LONGPRESS ===== -->
+      <div class="channel-panel" id="panel-longpress">
+
+        <div class="chat-divider">⏱️ 用户长按某个 tab 的 ✕ 按钮</div>
+
+        <div class="msg right">
+          <div class="msg-avatar" style="background:#f1f5f9;">👤</div>
+          <div class="msg-body">
+            <div class="msg-name" style="text-align:right;">用户</div>
+            <div class="msg-bubble bubble-user">按下 ✕ 按钮（mousedown），不松开</div>
+            <div class="msg-time" style="text-align:right;">14:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx</div>
+            <div class="msg-bubble bubble-ui-ti">
+              <code>handleCloseMouseDown</code> 触发：<br>
+              记录 <code>pressStartRef = Date.now()</code>，设 <code>pressingRef = true</code>，<br>
+              调 <code>onLongPressStart()</code> 通知父组件。
+            </div>
+            <div class="msg-time">14:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f0fdf4;">🗂️</div>
+          <div class="msg-body">
+            <div class="msg-name">DomainCard.tsx</div>
+            <div class="msg-bubble bubble-ui-dc">
+              收到 <code>onLongPressStart</code>！马上：<br>
+              1. <code>setLongPressActive(true)</code> → 整个卡片立即开始 <code>cardShake</code> CSS 动画循环<br>
+              2. 所有 TabItem 收到 <code>forceShowClose=true</code> → ✕ 按钮全部显示<br>
+              3. 所有 TabItem 收到 <code>isCharging=true</code> → ✕ 外圈 SVG 进度环挂载，<code>ringFill 3s linear forwards</code> 动画开始倒计时<br>
+              4. <code>lpTimerRef</code> 启动 3s 定时器
+            </div>
+            <div class="msg-time">14:00:00</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx（所有 item）</div>
+            <div class="msg-bubble bubble-ui-ti">
+              我们都在配合：<br>
+              • <code>isCharging=true</code> → 渲染 SVG &lt;circle&gt;，<code>strokeDashoffset</code> 从 81.68 动画到 0（顺时针填充）<br>
+              • <code>forceShowClose=true</code> → ✕ 颜色从透明变为 <code>#999</code>
+            </div>
+            <div class="msg-time">14:00:01</div>
+          </div>
+        </div>
+
+        <div class="chat-divider">— 用户继续按住，3秒过去 —</div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f0fdf4;">🗂️</div>
+          <div class="msg-body">
+            <div class="msg-name">DomainCard.tsx</div>
+            <div class="msg-bubble bubble-ui-dc">
+              ⏰ 3s 定时器到！调 <code>handleDomainBombRef.current()</code>：<br>
+              1. <code>setLongPressActive(false)</code> → 卡片停止抖动<br>
+              2. <code>onShake()</code> → 屏幕整体震动<br>
+              3. 对所有可见 tab 按 80ms 间隔依次调 <code>triggerBombVisual()</code><br>
+              4. 500ms 后 <code>chrome.tabs.remove(allIds)</code> 关掉该域名下全部 tab（含重复副本和隐藏行）
+            </div>
+            <div class="msg-time">14:00:03</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx（逐个爆炸）</div>
+            <div class="msg-bubble bubble-ui-ti">
+              💥 💥 💥 每个 item 依次爆炸，闪光 + 火焰粒子 + 烟雾，视觉模式行暂时保留。
+            </div>
+            <div class="msg-time">14:00:03</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#eff6ff;">📦</div>
+          <div class="msg-body">
+            <div class="msg-name">useTabs.ts</div>
+            <div class="msg-bubble bubble-data">
+              <code>chrome.tabs.onRemoved</code> 连续触发，我重新 query，域名下已无 tab，该 DomainCard 从 DOM 消失。
+            </div>
+            <div class="msg-time">14:00:04</div>
+          </div>
+        </div>
+
+        <div class="chat-divider" style="margin-top:8px;">— 或者：用户在 3s 内松开 ✕ —</div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#fff7ed;">💣</div>
+          <div class="msg-body">
+            <div class="msg-name">TabItem.tsx</div>
+            <div class="msg-bubble bubble-ui-ti">
+              <code>handleCloseRelease</code>：<br>
+              计算 <code>elapsed = Date.now() - pressStartRef</code><br>
+              &nbsp;• <code>&lt; 200ms</code> → 普通点击，正常关闭 tab<br>
+              &nbsp;• <code>200ms ~ 3s</code> → 调 <code>onLongPressCancel()</code>，什么都不关
+            </div>
+            <div class="msg-time">14:00:01</div>
+          </div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-avatar" style="background:#f0fdf4;">🗂️</div>
+          <div class="msg-body">
+            <div class="msg-name">DomainCard.tsx</div>
+            <div class="msg-bubble bubble-ui-dc">
+              收到取消信号：<code>clearTimeout(lpTimerRef)</code>，<code>setLongPressActive(false)</code>。<br>
+              卡片停止抖动，所有 TabItem 的进度环和 ✕ 恢复默认状态。
+            </div>
+            <div class="msg-time">14:00:01</div>
+          </div>
+        </div>
+
+      </div><!-- /panel-longpress -->
+
+    </div><!-- /chat-body -->
+  </div><!-- /chat-window -->
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>TabBoom 代码库全景文档 · 由 <span>大花</span> & VibeCoding 构建 · Plasmo · React 18 · Chrome MV3</p>
+</footer>
+
+<script>
+function switchChannel(name) {
+  // update buttons
+  document.querySelectorAll('.channel-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // update panels
+  document.querySelectorAll('.channel-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+
+  // scroll to top of chat body
+  document.getElementById('chat-body').scrollTop = 0;
+}
+</script>
+
+</body>
+</html>
