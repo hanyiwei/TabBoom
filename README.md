@@ -2,19 +2,20 @@
 # TabBoom
 
 ```
-Chrome 扩展工具： 一键炸掉所有重复 BOOM!!
-支持能力： 域名分组 + Tab搜索 + 一键去重 + 趣味爆破
+Chrome 扩展工具： 一键炸掉所有重复标签页 BOOM!!
+每次新打开标签页即进入此扩展工具页，所有打开的 Tab 将按域名自动分组；
+单击快速定位 · 重复检测 · 筛选搜索 · 清除重复 · 趣味爆破.
 ```
 
 
 ### BoomBoom!!
-单击 ✕ — 炸弹关闭
+单击 ✕ — 关闭Tab / 单击 Close duplicates — 关闭重复Tab
 
 ![单击关闭演示](assets/close_tab.gif)
 
 <br>
 
-长按3秒 ✕ — 爆破模式
+长按3秒 ✕ — 关闭同域名下所有Tab
 
 ![长按核弹演示](assets/close_boom.gif)
 
@@ -36,11 +37,11 @@ Chrome 扩展工具： 一键炸掉所有重复 BOOM!!
 
 | 技术 | 版本 | 用途 |
 |------|------|------|
-| [Plasmo](https://www.plasmo.com/) | 0.90.5 | Chrome 扩展框架，处理 MV3 构建 |
+| Plasmo | 0.90.5 | 扩展框架，处理 MV3 构建 |
 | React | 18 | UI 渲染 |
 | TypeScript | 5.3 | 类型安全 |
 | Web Animations API | — | 炸弹飞行曲线 / 爆炸粒子 / 屏幕震动 |
-| chrome.tabs API | MV3 | 读取、监听、关闭标签页 |
+| Chrome.tabs API | MV3 | 读取、监听、关闭标签页 |
 
 ---
 
